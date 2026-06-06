@@ -24,7 +24,6 @@ dependencies:
   html: ^0.15.1
   html_main_element: ^2.1.0
   dio: ^5.1.1
-  dynamic_color: ^1.8.1
   intl: any
   file_picker: ^5.3.4
   xml: ^6.3.0
