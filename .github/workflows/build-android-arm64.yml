@@ -41,9 +41,12 @@ jobs:
       - name: Build Android arm64 APK
         run: flutter build apk --release --target-platform android-arm64
 
+      - name: List generated APKs
+        run: ls -la build/app/outputs/flutter-apk/ || echo "No APK directory found"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: MeRead-arm64-v8a
-          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
           retention-days: 7
