@@ -109,5 +109,9 @@
     "saveImageInfo": "是否保存图片到相册？",
     "saveImageSuccess": "图片已保存到相册",
     "selectAll": "全选",
-    "unSelectAll": "取消全选"
+    "unSelectAll": "取消全选",
+    "exportBlockRules": "导出屏蔽规则",
+    "importBlockRules": "导入屏蔽规则",
+    "blockRulesExported": "屏蔽规则已复制到剪贴板（使用 //// 分隔）",
+    "blockRulesImported": "成功导入 {count} 个关键词"
 }
