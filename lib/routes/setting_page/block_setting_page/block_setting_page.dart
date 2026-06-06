@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:meread/global/global.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class BlockSettingPage extends StatefulWidget {
   const BlockSettingPage({Key? key}) : super(key: key);
@@ -14,87 +18,80 @@ class _BlockSettingPageState extends State<BlockSettingPage> {
   // 屏蔽词列表
   final List<String> _blockList = prefs.getStringList('blockList') ?? [];
 
-  // 导出关键词（使用 //// 分隔，复制到剪贴板）
-  void _exportKeywords() {
+  // 导出为 TXT 文件
+  Future<void> _exportKeywordsToTxt() async {
     if (_blockList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.blockRulesExported),
-        ),
+        const SnackBar(content: Text('当前没有屏蔽关键词')),
       );
       return;
     }
-    final String exportStr = _blockList.join('////');
-    Clipboard.setData(ClipboardData(text: exportStr));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.blockRulesExported),
-      ),
-    );
+
+    try {
+      final String content = _blockList.join('////');
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/meread_block_keywords.txt';
+      final file = File(filePath);
+      await file.writeAsString(content);
+
+      await Share.shareXFiles(
+        [XFile(filePath, mimeType: 'text/plain')],
+        text: 'MeRead 屏蔽关键词列表（使用 //// 分隔）',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('导出失败: $e')),
+      );
+    }
   }
 
-  // 导入关键词（从文本分割 //// ）
-  void _importKeywords() {
-    final TextEditingController importController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          icon: const Icon(Icons.download_outlined),
-          title: Text(AppLocalizations.of(context)!.importBlockRules),
-          content: TextField(
-            controller: importController,
-            maxLines: 6,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: '粘贴用 //// 分隔的关键词列表\n例如：广告////推广////spam',
-              border: const OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(AppLocalizations.of(context)!.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                if (importController.text.isNotEmpty) {
-                  final List<String> imported = importController.text
-                      .split('////')
-                      .map((e) => e.trim())
-                      .where((e) => e.isNotEmpty)
-                      .toList();
+  // 从 TXT 文件导入
+  Future<void> _importKeywordsFromTxt() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['txt'],
+        allowMultiple: false,
+      );
 
-                  int addedCount = 0;
-                  setState(() {
-                    for (final kw in imported) {
-                      if (!_blockList.contains(kw)) {
-                        _blockList.add(kw);
-                        addedCount++;
-                      }
-                    }
-                  });
-                  if (addedCount > 0) {
-                    prefs.setStringList('blockList', _blockList);
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        AppLocalizations.of(context)!.blockRulesImported(addedCount),
-                      ),
-                    ),
-                  );
-                }
-                Navigator.pop(context);
-              },
-              child: Text(AppLocalizations.of(context)!.ok),
-            ),
-          ],
-        );
-      },
-    );
+      if (result == null || result.files.isEmpty) return;
+
+      final filePath = result.files.single.path;
+      if (filePath == null) return;
+
+      final content = await File(filePath).readAsString();
+      final imported = content
+          .split('////')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
+      int addedCount = 0;
+      setState(() {
+        for (final kw in imported) {
+          if (!_blockList.contains(kw)) {
+            _blockList.add(kw);
+            addedCount++;
+          }
+        }
+      });
+
+      if (addedCount > 0) {
+        prefs.setStringList('blockList', _blockList);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.blockRulesImported(addedCount),
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('导入失败: $e')),
+      );
+    }
   }
 
   @override
@@ -103,17 +100,17 @@ class _BlockSettingPageState extends State<BlockSettingPage> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.blockRules),
         actions: [
-          // 导入关键词
+          // 从 TXT 文件导入
           IconButton(
-            onPressed: _importKeywords,
+            onPressed: _importKeywordsFromTxt,
             icon: const Icon(Icons.file_download_outlined),
-            tooltip: AppLocalizations.of(context)!.importBlockRules,
+            tooltip: '从 TXT 文件导入',
           ),
-          // 导出关键词
+          // 导出为 TXT 文件
           IconButton(
-            onPressed: _exportKeywords,
+            onPressed: _exportKeywordsToTxt,
             icon: const Icon(Icons.file_upload_outlined),
-            tooltip: AppLocalizations.of(context)!.exportBlockRules,
+            tooltip: '导出为 TXT 文件',
           ),
           // 添加屏蔽词
           IconButton(
