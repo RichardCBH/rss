@@ -82,9 +82,7 @@ class _BlockSettingPageState extends State<BlockSettingPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        AppLocalizations.of(context)!
-                            .blockRulesImported
-                            .replaceAll('{count}', addedCount.toString()),
+                        AppLocalizations.of(context)!.blockRulesImported(addedCount),
                       ),
                     ),
                   );
