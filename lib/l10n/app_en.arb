@@ -109,5 +109,9 @@
     "saveImageInfo": "Do you want to save the picture to the album?",
     "saveImageSuccess": "Save Image Success",
     "selectAll": "Select All",
-    "unSelectAll": "Cancel Select All"
+    "unSelectAll": "Cancel Select All",
+    "exportBlockRules": "Export Block Rules",
+    "importBlockRules": "Import Block Rules",
+    "blockRulesExported": "Block rules copied to clipboard (separated by ////)",
+    "blockRulesImported": "Successfully imported {count} keywords"
 }
