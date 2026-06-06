@@ -1,4 +1,3 @@
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:meread/global/init.dart';
 import 'package:meread/provider/read_page_provider.dart';
@@ -30,46 +29,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'MeRead',
-          locale: context.watch<ThemeProvider>().language == 'local'
-              ? null
-              : Locale(context.watch<ThemeProvider>().language),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('zh'),
-          ],
-          theme: lightTheme(
-            context,
-            lightDynamic,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'MeRead',
+      locale: context.watch<ThemeProvider>().language == 'local'
+          ? null
+          : Locale(context.watch<ThemeProvider>().language),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('zh'),
+      ],
+      theme: lightTheme(context, null),
+      darkTheme: darkTheme(context, null),
+      themeMode: [
+        ThemeMode.light,
+        ThemeMode.dark,
+        ThemeMode.system,
+      ][context.watch<ThemeProvider>().themeIndex],
+      home: const HomePage(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaleFactor: context.watch<ThemeProvider>().textScaleFactor,
           ),
-          darkTheme: darkTheme(
-            context,
-            darkDynamic,
-          ),
-          themeMode: [
-            ThemeMode.light,
-            ThemeMode.dark,
-            ThemeMode.system,
-          ][context.watch<ThemeProvider>().themeIndex],
-          home: const HomePage(),
-          builder: (context, child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaleFactor: context.watch<ThemeProvider>().textScaleFactor,
-              ),
-              child: child!,
-            );
-          },
+          child: child!,
         );
       },
     );
