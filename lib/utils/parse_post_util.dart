@@ -8,7 +8,7 @@ import 'package:meread/webfeed/webfeed.dart';
 /// 成功返回 true，失败返回 false
 /// 参数：订阅源地址
 /// 返回：是否成功
-/// 注意：如果 [Post] 已存在，则不存入数据库
+/// 注意：如果 [Post]  已存在，则不存入数据库
 Future<bool> parsePosts(Feed feed) async {
   try {
     final response = await Dio().get(feed.url);
@@ -58,7 +58,7 @@ Future<void> parseRSSPostItem(RssItem item, Feed feed) async {
     feedName: feed.name,
     link: item.link!,
     content: item.description ?? '',
-    pubDate: item.pubDate!.toLocal().toString(),
+    pubDate: item.pubDate!.toUtc().add(const Duration(hours: 8)).toString(),
     read: false,
     favorite: false,
     fullText: feed.fullText,
@@ -82,7 +82,7 @@ Future<void> parseAtomPostFuturesItem(AtomItem item, Feed feed) async {
     feedName: feed.name,
     link: item.links![0].href!,
     content: item.content!,
-    pubDate: item.updated!.toLocal().toString(),
+    pubDate: item.updated!.toUtc().add(const Duration(hours: 8)).toString(),
     read: false,
     favorite: false,
     fullText: feed.fullText,
