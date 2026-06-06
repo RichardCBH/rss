@@ -8,6 +8,16 @@ class PostContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 将存储的时间转换为 UTC+8 显示
+    String displayTime = post.pubDate;
+    try {
+      final dateTime = DateTime.parse(post.pubDate).add(const Duration(hours: 8));
+      displayTime = dateTime.toString().substring(0, 16);
+    } catch (_) {
+      // 如果解析失败，保持原样
+      displayTime = post.pubDate.substring(0, 16);
+    }
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -41,7 +51,7 @@ class PostContainer extends StatelessWidget {
                   style: const TextStyle(fontSize: 12),
                 ),
                 Text(
-                  post.pubDate.substring(0, 16),
+                  displayTime,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
                 )
