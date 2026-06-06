@@ -1,0 +1,48 @@
+name: meread
+description: MeRead
+
+publish_to: "none"
+
+version: 0.6.0+22
+
+environment:
+  sdk: ">=2.18.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  sqflite: ^2.1.0
+  path: ^1.8.2
+  shared_preferences: ^2.0.15
+  provider: ^6.0.4
+  share_plus: ^7.1.0
+  opml: ^0.4.0
+  url_launcher: ^6.1.6
+  path_provider: ^2.0.11
+  html: ^0.15.1
+  html_main_element: ^2.1.0
+  dio: ^5.1.1
+  dynamic_color: ^1.6.3
+  intl: any
+  file_picker: ^5.3.4
+  xml: ^6.3.0
+  fluttertoast: ^8.2.2
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  flutter_inappwebview: ^5.7.2+3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.6
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/meread.png
+    - assets/avatar.png
+  generate: true
