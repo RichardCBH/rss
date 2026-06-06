@@ -30,7 +30,7 @@ class _BlockSettingPageState extends State<BlockSettingPage> {
     try {
       final String content = _blockList.join('////');
       final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/meread_block_keywords.txt';
+      final filePath = '${directory.path}/meread_block_keywords.txt';
       final file = File(filePath);
       await file.writeAsString(content);
 
