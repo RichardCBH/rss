@@ -29,6 +29,9 @@ jobs:
       - name: Run Flutter Doctor
         run: flutter doctor -v
 
+      - name: Clean project
+        run: flutter clean
+
       - name: Get dependencies
         run: flutter pub get
 
