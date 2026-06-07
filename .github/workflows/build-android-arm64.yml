@@ -2,14 +2,6 @@ name: Build Release APK (Signed)
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-          - release
 
 jobs:
   build:
@@ -45,18 +37,19 @@ jobs:
         run: flutter pub run build_runner build --delete-conflicting-outputs
 
       # ==================== Release Signing ====================
+      - name: Create keystore directory
+        run: mkdir -p android/app
+
       - name: Decode Keystore
-        if: ${{ github.event.inputs.build_type == 'release' }}
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
 
       - name: Create key.properties
-        if: ${{ github.event.inputs.build_type == 'release' }}
         run: |
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=app/upload-keystore.jks" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
 
       # ==================== Build ====================
       - name: Build Release APK (arm64)
