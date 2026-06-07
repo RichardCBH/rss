@@ -32,7 +32,6 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "xin.liuyu.meread"
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
